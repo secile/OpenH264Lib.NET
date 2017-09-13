@@ -1,7 +1,7 @@
-# OpenH264Lib
-OpenH264 wrapper library for .NET Framework.  
-This library is coded by C++/CLI language to bridge other .NET Framework language like C#.  
-This library is encode only.(unable to decode H264 frame.)
+# OpenH264Lib.NET
+OpenH264 wrapper library for .NET Framework.  
+This library is made by C++/CLI language to bridge other .NET Framework language like C#.  
+This library is encode only.(not support decoding H264 frame.)
 
 # How to use
 (1) Open OpenH264Lib.sln Visual Studio solution file.  
