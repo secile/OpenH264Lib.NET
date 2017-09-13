@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="OpenH264Header">
+      <UniqueIdentifier>{09a716c4-9b35-48f4-a562-e11e000b5e1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OpenH264Lib.h">
@@ -23,6 +26,18 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenH264Header\codec_api.h">
+      <Filter>OpenH264Header</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenH264Header\codec_app_def.h">
+      <Filter>OpenH264Header</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenH264Header\codec_def.h">
+      <Filter>OpenH264Header</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenH264Header\codec_ver.h">
+      <Filter>OpenH264Header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

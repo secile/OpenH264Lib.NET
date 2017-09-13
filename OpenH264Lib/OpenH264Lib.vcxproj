@@ -90,6 +90,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <AdditionalIncludeDirectories>$(ProjectDir)\OpenH264Header\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -132,6 +133,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="OpenH264Header\codec_api.h" />
+    <ClInclude Include="OpenH264Header\codec_app_def.h" />
+    <ClInclude Include="OpenH264Header\codec_def.h" />
+    <ClInclude Include="OpenH264Header\codec_ver.h" />
     <ClInclude Include="OpenH264Lib.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
