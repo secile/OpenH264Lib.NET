@@ -3,6 +3,7 @@
 #pragma once
 
 using namespace System;
+using namespace System::Drawing;
 
 namespace OpenH264Lib {
 
@@ -24,6 +25,7 @@ namespace OpenH264Lib {
 	public:
 		OpenH264Encoder();
 		int Setup(int width, int height, float fps, void *onEncode);
+		int Encode(Bitmap^ bmp, float timestamp);
 		int Encode(array<Byte> ^data, float timestamp);
 		int Encode(unsigned char *data, float timestamp);
 
@@ -32,5 +34,8 @@ namespace OpenH264Lib {
 		typedef void(__stdcall *OnEncodeFuncPtr)(unsigned char* data, int length, bool keyFrame);
 		OnEncodeFuncPtr OnEncodeFunc;
 
+	private:
+		static unsigned char* BitmapToRGBA(Bitmap^ bmp, int width, int height);
+		static unsigned char* RGBAtoYUV420Planar(unsigned char *rgba, int width, int height);
 	};
 }
