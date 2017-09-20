@@ -24,15 +24,17 @@ namespace OpenH264Lib {
 
 	public:
 		OpenH264Encoder();
-		int Setup(int width, int height, float fps, void *onEncode);
+
+	public:
+		delegate void OnEncodeCallback(array<Byte>^ data, int length, bool keyFrame);
+		int Setup(int width, int height, float fps, OnEncodeCallback ^onEncode);
 		int Encode(Bitmap^ bmp, float timestamp);
 		int Encode(array<Byte> ^data, float timestamp);
 		int Encode(unsigned char *data, float timestamp);
 
 	private:
-		void OnEncode(const SFrameBSInfo% info);
-		typedef void(__stdcall *OnEncodeFuncPtr)(unsigned char* data, int length, bool keyFrame);
-		OnEncodeFuncPtr OnEncodeFunc;
+		void EncodeCallback(const SFrameBSInfo% info);
+		OnEncodeCallback^ OnEncode;
 
 	private:
 		static unsigned char* BitmapToRGBA(Bitmap^ bmp, int width, int height);

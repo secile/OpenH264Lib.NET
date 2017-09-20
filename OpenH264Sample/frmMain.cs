@@ -29,9 +29,6 @@ namespace OpenH264Sample
             }
         }
 
-        private delegate void OnEncodeCallbackDelegate(System.IntPtr data, int length, bool keyFrame);
-        private OnEncodeCallbackDelegate onEncode = null; // GC回収されないようにメンバ変数にする(ローカル変数NG)
-
         private void H264Encode(string[] paths, float fps)
         {
             var firstFrame = new Bitmap(paths[0]);
@@ -44,30 +41,19 @@ namespace OpenH264Sample
             // H264エンコーダーを作成
             var encoder = new OpenH264Lib.OpenH264Encoder();
 
-            // 1フレームエンコードするごとにライターに書き込み
-            onEncode = (data, length, keyFrame) =>
+            // 1フレームエンコードするごとにAVI書き込み
+            encoder.Setup(firstFrame.Width, firstFrame.Height, fps, (data, length, keyFrame) =>
             {
-                var data_bytes = new byte[length];
-                System.Runtime.InteropServices.Marshal.Copy(data, data_bytes, 0, length);
-                writer.AddImage(data_bytes, keyFrame);
+                writer.AddImage(data, keyFrame);
                 Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
-            };
-
-            // H264エンコーダーの設定
-            unsafe
-            {
-                var onEncodeFunc = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(onEncode);
-                encoder.Setup(firstFrame.Width, firstFrame.Height, fps, onEncodeFunc.ToPointer());
-            }
+            });
 
             // 1フレームごとにエンコード実施
             for (int i = 0; i < paths.Length; i++)
             {
                 var bmp = new Bitmap(paths[i]);
-                //var rgba = BitmapToRGBA(bmp);
-                //var yuv420 = RGBAtoYUV420Planar(rgba, bmp.Width, bmp.Height);
-                //encoder.Encode(yuv420, i);
                 encoder.Encode(bmp, i);
+                bmp.Dispose();
             }
 
             writer.Close();

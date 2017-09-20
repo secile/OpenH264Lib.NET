@@ -55,13 +55,13 @@ namespace OpenH264Lib {
 
 		// エンコード完了コールバック
 		if (bsi->eFrameType != videoFrameTypeSkip) {
-			OnEncode(dynamic_cast<SFrameBSInfo%>(*bsi));
+			EncodeCallback(dynamic_cast<SFrameBSInfo%>(*bsi));
 		}
 
 		return 0;
 	}
 
-	void OpenH264Encoder::OnEncode(const SFrameBSInfo% info)
+	void OpenH264Encoder::EncodeCallback(const SFrameBSInfo% info)
 	{
 		for (int i = 0; i < info.iLayerNum; ++i) {
 			const SLayerBSInfo& layerInfo = info.sLayerInfo[i];
@@ -71,7 +71,10 @@ namespace OpenH264Lib {
 			}
 
 			bool keyFrame = (info.eFrameType == videoFrameTypeIDR) || (info.eFrameType == videoFrameTypeI);
-			OnEncodeFunc(layerInfo.pBsBuf, layerSize, keyFrame);
+
+			array<Byte>^ data = gcnew array<Byte>(layerSize);
+			System::Runtime::InteropServices::Marshal::Copy((IntPtr)layerInfo.pBsBuf, data, 0, layerSize);
+			OnEncode(data, layerSize, keyFrame);
 		}
 	}
 
@@ -79,9 +82,9 @@ namespace OpenH264Lib {
 	// width, height:画像サイズ
 	// fps:フレームレート
 	// onEncode:1フレームエンコードするごとに呼び出されるコールバック
-	int OpenH264Encoder::Setup(int width, int height, float fps, void *onEncode)
+	int OpenH264Encoder::Setup(int width, int height, float fps, OnEncodeCallback ^onEncode)
 	{
-		OnEncodeFunc = static_cast<OnEncodeFuncPtr>(onEncode);
+		OnEncode = onEncode;
 
 		// 何フレームごとにキーフレーム(Iフレーム)を挿入するか
 		// 通常の動画(30fps)では60(つまり2秒ごと)位が適切らしい。
