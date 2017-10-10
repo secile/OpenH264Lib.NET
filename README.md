@@ -16,7 +16,7 @@ encoder.Setup(640, 480, fps, (data, length, keyFrame) =>
     Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
 });
 
-// 1フレームごとにエンコード実施
+// encode frame
 foreach(var bmp in bitmaps)
 {
     encoder.Encode(bmp, i);
