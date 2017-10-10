@@ -4,6 +4,26 @@ This library is made by C++/CLI language to bridge other .NET Framework language
 This library is encode only.(not support decoding H264 frame.)
 
 # How to use
+```C#
+// create encoder
+var encoder = new OpenH264Lib.OpenH264Encoder();
+
+// setup encoder
+float fps = 10.0f;
+encoder.Setup(640, 480, fps, (data, length, keyFrame) =>
+{
+    // called when each frame encoded.
+    Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
+});
+
+// 1フレームごとにエンコード実施
+foreach(var bmp in bitmaps)
+{
+    encoder.Encode(bmp, i);
+}
+```
+
+# See Example
 (1) Open OpenH264Lib.sln Visual Studio solution file.  
 (2) Build OpenH264Lib project. Then created OpenH264Lib.dll.  
 (3) Build OpenH264Sample project. This is example C# project how to use OpenH264Lib.dll.  
