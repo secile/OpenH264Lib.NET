@@ -19,13 +19,13 @@ namespace OpenH264Sample
 
         private void btnEncode_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Select images to encord H264 AVI.");
+            MessageBox.Show("Select images to encord H264 AVI.\nImage must be same width & height.");
 
             var dialog = new OpenFileDialog() { Multiselect = true };
             dialog.Filter = "Image Files (*.bmp, *.png, *.jpg)|*.bmp;*.png;*.jpg";
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                H264Encode(dialog.FileNames, (int)nudFps.Value);
+                H264Encode(dialog.FileNames, (float)nudFps.Value);
             }
         }
 
@@ -39,14 +39,25 @@ namespace OpenH264Sample
             var writer = new H264Writer(aviFile, firstFrame.Width, firstFrame.Height, fps);
 
             // H264エンコーダーを作成
-            var encoder = new OpenH264Lib.OpenH264Encoder();
+            var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
+            var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
 
-            // 1フレームエンコードするごとにAVI書き込み
-            encoder.Setup(firstFrame.Width, firstFrame.Height, fps, (data, length, keyFrame) =>
+            // 1フレームエンコードするごとにライターに書き込み
+            OpenH264Lib.Encoder.OnEncodeCallback onEncode = (data, length, frameType) =>
             {
+                var keyFrame = (frameType == OpenH264Lib.Encoder.FrameType.IDR) || (frameType == OpenH264Lib.Encoder.FrameType.I);
                 writer.AddImage(data, keyFrame);
                 Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
-            });
+
+                // エンコードしたデータをでコードして、もとの画像に戻す。
+                var bmp = decoder.Decode(data, length);
+                if (bmp == null) return;
+                pbxScreen.Image = bmp;
+            };
+
+            // H264エンコーダーの設定
+            encoder.Setup(firstFrame.Width, firstFrame.Height, 5000000, fps, 2.0f, onEncode);
+            decoder.Setup();
 
             // 1フレームごとにエンコード実施
             for (int i = 0; i < paths.Length; i++)
