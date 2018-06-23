@@ -23,8 +23,10 @@ namespace OpenH264Lib {
 	public:
 		Decoder(String ^dllName);
 
-	public:
+	private:
 		int Setup();
+
+	public:
 		System::Drawing::Bitmap^ Decode(array<Byte> ^frame, int srcLen);
 		System::Drawing::Bitmap^ Decode(unsigned char *frame, int srcLen);
 

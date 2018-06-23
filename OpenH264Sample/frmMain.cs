@@ -57,7 +57,6 @@ namespace OpenH264Sample
 
             // H264エンコーダーの設定
             encoder.Setup(firstFrame.Width, firstFrame.Height, 5000000, fps, 2.0f, onEncode);
-            decoder.Setup();
 
             // 1フレームごとにエンコード実施
             for (int i = 0; i < paths.Length; i++)
