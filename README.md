@@ -7,7 +7,6 @@ This library is made with C++/CLI to bridge other .NET Framework language like C
 // create encoder and decoder
 var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
 var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
-decoder.Setup();
 
 // setup encoder
 float fps = 10.0f;
@@ -18,8 +17,7 @@ encoder.Setup(640, 480, fps, (data, length, keyFrame) =>
     
     // decode it to Bitmap again...
     var bmp = decoder.Decode(data, length);
-    if (bmp == null) return;
-    pbxScreen.Image = bmp;
+    if (bmp != null) Console.WriteLine(bmp.Size);
 });
 
 // encode frame
