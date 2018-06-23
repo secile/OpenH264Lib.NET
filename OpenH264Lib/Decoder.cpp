@@ -90,7 +90,8 @@ namespace OpenH264Lib {
 		decoder = dec;
 		if (rc != 0) throw gcnew System::DllNotFoundException(String::Format("Unable to call WelsCreateSVCDecoder func in '{0}'"));
 
-		Setup();
+		rc = Setup();
+		if (rc != 0) throw gcnew System::InvalidOperationException(String::Format("Error occurred during initializing decoder."));
 	}
 
 	// デストラクタ：リソースを積極的に解放する為にあるメソッド。C#のDisposeに対応。
