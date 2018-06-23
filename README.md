@@ -1,5 +1,5 @@
 # OpenH264Lib.NET
-OpenH264 wrapper library for .NET Framework.  
+OpenH264 wrapper library for .NET Framework.  
 This library is made with C++/CLI to bridge other .NET Framework language like C#.  
 
 # How to use
