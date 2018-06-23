@@ -1,12 +1,13 @@
 # OpenH264Lib.NET
 OpenH264 wrapper library for .NET Framework.  
-This library is made by C++/CLI language to bridge other .NET Framework language like C#.  
-This library is encode only.(not support decoding H264 frame.)
+This library is made with C++/CLI to bridge other .NET Framework language like C#.  
 
 # How to use
 ```C#
-// create encoder
-var encoder = new OpenH264Lib.OpenH264Encoder();
+// create encoder and decoder
+var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
+var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
+decoder.Setup();
 
 // setup encoder
 float fps = 10.0f;
@@ -14,6 +15,11 @@ encoder.Setup(640, 480, fps, (data, length, keyFrame) =>
 {
     // called when each frame encoded.
     Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
+    
+    // decode it to Bitmap again...
+    var bmp = decoder.Decode(data, length);
+    if (bmp == null) return;
+    pbxScreen.Image = bmp;
 });
 
 // encode frame
