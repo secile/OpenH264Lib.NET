@@ -32,6 +32,7 @@
             this.nudFps = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.pbxScreen = new System.Windows.Forms.PictureBox();
+            this.btnDecode = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nudFps)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbxScreen)).BeginInit();
             this.SuspendLayout();
@@ -90,11 +91,22 @@
             this.pbxScreen.TabIndex = 3;
             this.pbxScreen.TabStop = false;
             // 
+            // btnDecode
+            // 
+            this.btnDecode.Location = new System.Drawing.Point(195, 12);
+            this.btnDecode.Name = "btnDecode";
+            this.btnDecode.Size = new System.Drawing.Size(75, 23);
+            this.btnDecode.TabIndex = 4;
+            this.btnDecode.Text = "Decode";
+            this.btnDecode.UseVisualStyleBackColor = true;
+            this.btnDecode.Click += new System.EventHandler(this.btnDecode_Click);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(282, 253);
+            this.Controls.Add(this.btnDecode);
             this.Controls.Add(this.pbxScreen);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.nudFps);
@@ -114,6 +126,7 @@
         private System.Windows.Forms.NumericUpDown nudFps;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pbxScreen;
+        private System.Windows.Forms.Button btnDecode;
     }
 }
 

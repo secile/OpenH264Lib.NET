@@ -5,7 +5,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace OpenH264Sample
@@ -19,17 +18,17 @@ namespace OpenH264Sample
 
         private void btnEncode_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Select images to encord H264 AVI.\nImage must be same width & height.");
+            MessageBox.Show("Select images to encord H264 AVI.\nImages must be same width & height.");
 
             var dialog = new OpenFileDialog() { Multiselect = true };
             dialog.Filter = "Image Files (*.bmp, *.png, *.jpg)|*.bmp;*.png;*.jpg";
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                H264Encode(dialog.FileNames, (float)nudFps.Value);
+                H264Encode(dialog.FileNames, (int)nudFps.Value);
             }
         }
 
-        private void H264Encode(string[] paths, float fps)
+        private void H264Encode(string[] paths, int fps)
         {
             var firstFrame = new Bitmap(paths[0]);
 
@@ -40,7 +39,6 @@ namespace OpenH264Sample
 
             // H264エンコーダーを作成
             var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
-            var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
 
             // 1フレームエンコードするごとにライターに書き込み
             OpenH264Lib.Encoder.OnEncodeCallback onEncode = (data, length, frameType) =>
@@ -48,11 +46,6 @@ namespace OpenH264Sample
                 var keyFrame = (frameType == OpenH264Lib.Encoder.FrameType.IDR) || (frameType == OpenH264Lib.Encoder.FrameType.I);
                 writer.AddImage(data, keyFrame);
                 Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
-
-                // エンコードしたデータをでコードして、もとの画像に戻す。
-                var bmp = decoder.Decode(data, length);
-                if (bmp == null) return;
-                pbxScreen.Image = bmp;
             };
 
             // H264エンコーダーの設定
@@ -69,6 +62,42 @@ namespace OpenH264Sample
             writer.Close();
 
             MessageBox.Show(string.Format("{0}\n is created.", aviPath));
+        }
+
+        private void btnDecode_Click(object sender, EventArgs e)
+        {
+            var dialog = new OpenFileDialog() { Filter = "avi|*.avi" };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                H264Decode(dialog.FileName, (int)nudFps.Value);
+            }
+        }
+
+        private void H264Decode(string path, int fps)
+        {
+            var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
+
+            var aviFile = System.IO.File.OpenRead(path);
+            var riff = new RiffFile(aviFile);
+
+            var frames = riff.Chunks.OfType<RiffChunk>().Where(x => x.FourCC == "00dc");
+            var enumerator = frames.GetEnumerator();
+            var timer = new System.Timers.Timer(fps * 1000) { SynchronizingObject = this, AutoReset = true };
+            timer.Elapsed += (s, e) =>
+            {
+                if (enumerator.MoveNext() == false)
+                {
+                    timer.Stop();
+                    return;
+                }
+
+                var chunk = enumerator.Current;
+                var frame = chunk.ReadToEnd();
+                var image = decoder.Decode(frame, frame.Length);
+                if (image == null) return;
+                pbxScreen.Image = image;
+            };
+            timer.Start();
         }
     }
 }

@@ -9,7 +9,12 @@ using namespace System::Drawing::Imaging;
 
 namespace OpenH264Lib {
 
-	// C#からbyte[]として呼び出し可能
+	// Reference
+	// file://openh264-master\test\api\BaseEncoderTest.cpp
+	// file://openh264-master\codec\console\enc\src\welsenc.cpp
+
+	///<summary>Decode h264 frame data to Bitmap.</summary>
+	///<returns>Bitmap. Might be null if frame data is incomplete.</returns>
 	Bitmap^ Decoder::Decode(array<Byte> ^frame, int length)
 	{
 		// http://xptn.dtiblog.com/blog-entry-21.html
@@ -50,9 +55,9 @@ namespace OpenH264Lib {
 		int height = y_h;
 		int stride = y_s;
 
-		byte* rgb = YUV420PtoRGBA(y_plane, v_plane, u_plane, width, height, stride); // なぜかuvが逆。
-		System::IntPtr^ scan0 = gcnew System::IntPtr(rgb);
-		Bitmap^ result = gcnew Bitmap(width, height, stride * 3, System::Drawing::Imaging::PixelFormat::Format24bppRgb, *scan0);
+		byte* rgb = YUV420PtoRGB(y_plane, v_plane, u_plane, width, height, stride); // なぜかuvが逆。
+		Bitmap^ result = RGBtoBitmap(rgb, width, height);
+		delete rgb;
 
 		return result;
 	}
@@ -91,7 +96,7 @@ namespace OpenH264Lib {
 		if (rc != 0) throw gcnew System::DllNotFoundException(String::Format("Unable to call WelsCreateSVCDecoder func in '{0}'"));
 
 		rc = Setup();
-		if (rc != 0) throw gcnew System::InvalidOperationException(String::Format("Error occurred during initializing decoder."));
+		if (rc != 0) throw gcnew System::InvalidOperationException("Error occurred during initializing decoder.");
 	}
 
 	// デストラクタ：リソースを積極的に解放する為にあるメソッド。C#のDisposeに対応。
@@ -112,7 +117,7 @@ namespace OpenH264Lib {
 		DestroyDecoderFunc(decoder);
 	}
 
-	byte* Decoder::YUV420PtoRGBA(byte* yplane, byte* uplane, byte* vplane, int width, int height, int stride)
+	byte* Decoder::YUV420PtoRGB(byte* yplane, byte* uplane, byte* vplane, int width, int height, int stride)
 	{
 		// https://www.ite.or.jp/contents/keywords/FILE-20120103130828.pdf
 		// Yは輝度、Uは赤、Vは青との色差。
@@ -137,7 +142,8 @@ namespace OpenH264Lib {
 		// https://stackoverflow.com/questions/16107165/convert-from-yuv-420-to-imagebgr-byte/16108293
 		// https://gist.github.com/RicardoRodriguezPina/b90c4cef9c1646c0a9fe7faea8e06d63
 
-		byte* result = new byte[stride * height * 3];
+		byte* result = new byte[width * height * 3];
+		byte* rgb = result;
 
 		for (int y = 0; y < height; y++)
 		{
@@ -145,7 +151,6 @@ namespace OpenH264Lib {
 			int rowIdx = (stride * y);
 			int uvpIdx = (stride / 2) * (y / 2);
 
-			byte* rgb = result + rowIdx * 3;
 			byte* pYp = yplane + rowIdx;
 			byte* pUp = uplane + uvpIdx;
 			byte* pVp = vplane + uvpIdx;
@@ -182,5 +187,33 @@ namespace OpenH264Lib {
 		}
 
 		return result;
+	}
+
+	Bitmap^ Decoder::RGBtoBitmap(byte* rgb, int width, int height)
+	{
+		int pixelSize = 3;
+		Bitmap^ bmp = gcnew Bitmap(width, height, System::Drawing::Imaging::PixelFormat::Format24bppRgb);
+		BitmapData^ bmpDate = bmp->LockBits(System::Drawing::Rectangle(0, 0, width, height), ImageLockMode::WriteOnly, bmp->PixelFormat);
+		byte *ptr = (byte *)bmpDate->Scan0.ToPointer();
+
+		int cnt = 0;
+		for (int y = 0; y <= height - 1; y++)
+		{
+			for (int x = 0; x <= width - 1; x++)
+			{
+				//ピクセルデータでのピクセル(x,y)の開始位置を計算する
+				int pos = y * bmpDate->Stride + x * pixelSize;
+
+				ptr[pos + 0] = rgb[cnt + 0]; // r
+				ptr[pos + 1] = rgb[cnt + 1]; // g
+				ptr[pos + 2] = rgb[cnt + 2]; // b
+				cnt += 3;
+			}
+		}
+
+		//ロックを解除する
+		bmp->UnlockBits(bmpDate);
+
+		return bmp;
 	}
 }

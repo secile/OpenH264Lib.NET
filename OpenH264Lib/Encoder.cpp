@@ -16,6 +16,8 @@ namespace OpenH264Lib {
 
 	int Encoder::Encode(Bitmap^ bmp, float timestamp)
 	{
+		if (pic->iPicWidth != bmp->Width || pic->iPicHeight != bmp->Height) throw gcnew System::ArgumentException("Image width and height must be same.");
+
 		unsigned char* rgba = BitmapToRGBA(bmp, bmp->Width, bmp->Height);
 		unsigned char* i420 = RGBAtoYUV420Planar(rgba, bmp->Width, bmp->Height);
 		int rc = Encode(i420, timestamp);

@@ -27,10 +27,13 @@ namespace OpenH264Lib {
 		int Setup();
 
 	public:
-		System::Drawing::Bitmap^ Decode(array<Byte> ^frame, int srcLen);
-		System::Drawing::Bitmap^ Decode(unsigned char *frame, int srcLen);
+		///<summary>Decode h264 frame data to Bitmap.</summary>
+		///<returns>Bitmap. Might be null if frame data is incomplete.</returns>
+		System::Drawing::Bitmap^ Decode(array<Byte> ^frame, int length);
+		System::Drawing::Bitmap^ Decode(unsigned char *frame, int length);
 
 	private:
-		static byte* YUV420PtoRGBA(byte* yplane, byte* uplane, byte* vplane, int width, int height, int stride);
+		static byte* YUV420PtoRGB(byte* yplane, byte* uplane, byte* vplane, int width, int height, int stride);
+		static System::Drawing::Bitmap^ RGBtoBitmap(byte* rgb, int width, int height);
 	};
 }
