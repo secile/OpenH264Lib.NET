@@ -39,7 +39,7 @@ and copy it to OpenH264Sample/bin/Debug/ directory.
 By combining OpenH264Lib.NET and UsbCamera and MotionJPEGWriter, you can make H264 recorder.
 ```C#
 int index = 0;
-var camera = new UsbCamera(index, new Size(640, 480));
+var camera = new Github.secile.Video.UsbCamera(index, new Size(640, 480));
 camera.Start();
 
 // create H264 encorder.
@@ -48,7 +48,7 @@ var encoder = new OpenH264Lib.OpenH264Encoder("openh264-1.7.0-win32.dll");
 
 // write avi for every frame encorded.
 var fps = 10.0f;
-var writer = new Github.secile.Video.AviWriter(System.IO.File.OpenWrite(path), "H264", camera.Size.Width, camera.Size.Height, fps);
+var writer = new Github.secile.Avi.AviWriter(System.IO.File.OpenWrite(path), "H264", camera.Size.Width, camera.Size.Height, fps);
 OpenH264Lib.OpenH264Encoder.OnEncodeCallback onEncode = (data, length, frameType) =>
 {
     var keyFrame = (frameType == OpenH264Lib.OpenH264Encoder.FrameType.IDR) || (frameType == OpenH264Lib.OpenH264Encoder.FrameType.I);
