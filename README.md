@@ -36,7 +36,7 @@ and copy it to OpenH264Sample/bin/Debug/ directory.
 (5) Execute OpenH264Sample.exe. This program demos encode bmp/jpg/png images you select.
 
 # And...
-By combining OpenH264Lib.NET and UsbCamera and MotionJPEGWriter, you can make H264 recorder.
+You can make H264 recorder by using OpenH264Lib.NET and UsbCamera and AviWriter(in MotionJPEGWriter).
 ```C#
 int index = 0;
 var camera = new Github.secile.Video.UsbCamera(index, new Size(640, 480));
