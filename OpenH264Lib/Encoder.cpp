@@ -14,13 +14,20 @@ namespace OpenH264Lib {
 	// file://openh264-master\test\api\BaseEncoderTest.cpp
 	// file://openh264-master\codec\console\enc\src\welsenc.cpp
 
+	// Obsoleted and will deleted future release.
 	int Encoder::Encode(Bitmap^ bmp, float timestamp)
+	{
+		return Encode(bmp);
+	}
+
+	// Encode Bitmap to H264 frame data.
+	int Encoder::Encode(Bitmap^ bmp)
 	{
 		if (pic->iPicWidth != bmp->Width || pic->iPicHeight != bmp->Height) throw gcnew System::ArgumentException("Image width and height must be same.");
 
 		unsigned char* rgba = BitmapToRGBA(bmp, bmp->Width, bmp->Height);
 		unsigned char* i420 = RGBAtoYUV420Planar(rgba, bmp->Width, bmp->Height);
-		int rc = Encode(i420, timestamp);
+		int rc = Encode(i420);
 		delete rgba;
 		delete i420;
 
@@ -28,34 +35,38 @@ namespace OpenH264Lib {
 	}
 
 	// C#からbyte[]として呼び出し可能
-	int Encoder::Encode(array<Byte> ^i420, float timestamp)
+	int Encoder::Encode(array<Byte> ^i420)
 	{
 		// http://xptn.dtiblog.com/blog-entry-21.html
 		pin_ptr<Byte> ptr = &i420[0];
-		int rc = Encode(ptr, timestamp);
+		int rc = Encode(ptr);
 		ptr = nullptr; // unpin
 		return rc;
 	}
 
 	// C#からはunsafe&fixedを利用しないと呼び出しできない
-	int Encoder::Encode(unsigned char *i420, float timestamp)
+	int Encoder::Encode(unsigned char *i420)
 	{
 		memcpy(i420_buffer, i420, buffer_size);
 
+		// insert key frame at periodic interval.
 		// 一定間隔でキーフレーム(Iフレーム)を挿入
 		if (num_of_frames++ % keyframe_interval == 0) {
 			encoder->ForceIntraFrame(true);
 		}
 
-		// タイムスタンプをmsで付加
-		pic->uiTimeStamp = (long long)(timestamp * 1000.0f);
-
+		// comment out.
+		//bsi->uiTimeStamp seems to incresed automatically.
+		//pic->uiTimeStamp = (long long)(timestamp * 1000.0f);
+		
+		// encode frame.
 		// フレームエンコード
 		int ret = encoder->EncodeFrame(pic, bsi);
 		if (ret != 0) {
 			return ret;
 		}
 
+		// encode completed callback.
 		// エンコード完了コールバック
 		if (bsi->eFrameType != videoFrameTypeSkip) {
 			OnEncode(dynamic_cast<SFrameBSInfo%>(*bsi));
@@ -86,12 +97,12 @@ namespace OpenH264Lib {
 		}
 	}
 
-	// エンコーダーの設定
-	// width, height:画像サイズ
-	// bps:ターゲットビットレート。openH264のデフォルト値「5000000」で「5Mbps」。
-	// fps:フレームレート
-	// keyFrameInterval:何フレームごとにキーフレーム(Iフレーム)を挿入するか。通常の動画(30fps)では60(つまり2秒ごと)位が適切らしい。
-	// onEncode:1フレームエンコードするごとに呼び出されるコールバック
+	// エンコーダーの設定(Encoder Setup.)
+	// width, height:画像サイズ(image size.)
+	// bps:ターゲットビットレート。openH264のデフォルト値「5000000」で「5Mbps」。(target bitrate. e.g. 5000000.)
+	// fps:フレームレート(frame rate.)
+	// keyFrameInterval:キーフレーム(Iフレーム)挿入間隔を秒で指定。通常の動画(30fps)では2秒ごと位が適切らしい。(insert key frame interval. unit is second. e.g. 2(sec).)
+	// onEncode:1フレームエンコードするごとに呼び出されるコールバック。(callback function when each frame encoded.)
 	int Encoder::Setup(int width, int height, int bps, float fps, float keyFrameInterval, OnEncodeCallback^ onEncode)
 	{
 		//OnEncodeFunc = static_cast<OnEncodeFuncPtr>(onEncode->ToPointer());

@@ -38,9 +38,12 @@ namespace OpenH264Lib {
 		delegate void OnEncodeCallback(array<Byte> ^data, int length, FrameType keyFrame);
 		int Setup(int width, int height, int bps, float fps, float keyFrameInterval, OnEncodeCallback ^onEncode);
 
+		[Obsolete("timestamp argument is unnecessary. use Encode(Bitmap) instead.")]
 		int Encode(System::Drawing::Bitmap ^bmp, float timestamp);
-		int Encode(array<Byte> ^i420, float timestamp);
-		int Encode(unsigned char *i420, float timestamp);
+
+		int Encode(System::Drawing::Bitmap ^bmp);
+		int Encode(array<Byte> ^i420);
+		int Encode(unsigned char *i420);
 
 	private:
 		void OnEncode(const SFrameBSInfo% info);
