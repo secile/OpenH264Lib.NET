@@ -32,15 +32,15 @@ namespace OpenH264Sample
         {
             var firstFrame = new Bitmap(paths[0]);
 
-            // AVIに出力するライターを作成
+            // AVIに出力するライターを作成(create AVI writer)
             var aviPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + @"\test.avi";
             var aviFile = System.IO.File.OpenWrite(aviPath);
             var writer = new H264Writer(aviFile, firstFrame.Width, firstFrame.Height, fps);
 
-            // H264エンコーダーを作成
+            // H264エンコーダーを作成(create H264 encoder)
             var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
 
-            // 1フレームエンコードするごとにライターに書き込み
+            // 1フレームエンコードするごとにライターに書き込み(write frame data for each frame encoded)
             OpenH264Lib.Encoder.OnEncodeCallback onEncode = (data, length, frameType) =>
             {
                 var keyFrame = (frameType == OpenH264Lib.Encoder.FrameType.IDR) || (frameType == OpenH264Lib.Encoder.FrameType.I);
@@ -48,14 +48,16 @@ namespace OpenH264Sample
                 Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
             };
 
-            // H264エンコーダーの設定
-            encoder.Setup(firstFrame.Width, firstFrame.Height, 5000000, fps, 2.0f, onEncode);
+            // H264エンコーダーの設定(encoder setup)
+            int bps = 5000 * 1000;         // target bitrate. 5Mbps.
+            float keyFrameInterval = 2.0f; // insert key frame interval. unit is second.
+            encoder.Setup(firstFrame.Width, firstFrame.Height, bps, fps, keyFrameInterval, onEncode);
 
-            // 1フレームごとにエンコード実施
+            // 1フレームごとにエンコード実施(do encode)
             for (int i = 0; i < paths.Length; i++)
             {
                 var bmp = new Bitmap(paths[i]);
-                encoder.Encode(bmp, i);
+                encoder.Encode(bmp);
                 bmp.Dispose();
             }
 
@@ -82,7 +84,7 @@ namespace OpenH264Sample
 
             var frames = riff.Chunks.OfType<RiffChunk>().Where(x => x.FourCC == "00dc");
             var enumerator = frames.GetEnumerator();
-            var timer = new System.Timers.Timer(fps * 1000) { SynchronizingObject = this, AutoReset = true };
+            var timer = new System.Timers.Timer(1000 / fps) { SynchronizingObject = this, AutoReset = true };
             timer.Elapsed += (s, e) =>
             {
                 if (enumerator.MoveNext() == false)
