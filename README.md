@@ -10,10 +10,12 @@ var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
 
 // setup encoder
 float fps = 10.0f;
-encoder.Setup(640, 480, fps, (data, length, keyFrame) =>
+int bps = 5000 * 1000;         // target bitrate. 5Mbps.
+float keyFrameInterval = 2.0f; // insert key frame interval. unit is second.
+encoder.Setup(640, 480, bps, fps, keyFrameInterval, (data, length, frameType) =>
 {
     // called when each frame encoded.
-    Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
+    Console.WriteLine("Encord {0} bytes, frameType:{1}", length, frameType);
     
     // decode it to Bitmap again...
     var bmp = decoder.Decode(data, length);
@@ -23,7 +25,7 @@ encoder.Setup(640, 480, fps, (data, length, keyFrame) =>
 // encode frame
 foreach(var bmp in bitmaps)
 {
-    encoder.Encode(bmp, i);
+    encoder.Encode(bmp);
 }
 ```
 
@@ -57,16 +59,15 @@ OpenH264Lib.OpenH264Encoder.OnEncodeCallback onEncode = (data, length, frameType
 
 // setup encorder.
 int bps = 100000; // 100kbps
-encoder.Setup(camera.Size.Width, camera.Size.Height, bps, fps, 10.0f, onEncode);
+encoder.Setup(camera.Size.Width, camera.Size.Height, bps, fps, 2.0f, onEncode);
 
 // encode image for every captured image.
-var sw = System.Diagnostics.Stopwatch.StartNew();
 var timer = new System.Timers.Timer(1000 / fps) { SynchronizingObject = this };
 timer.Elapsed += (s, ev) =>
 {
     var bmp = camera.GetBitmap();
     pbxImage.Image = bmp;
-    encoder.Encode(bmp, sw.ElapsedMilliseconds);
+    encoder.Encode(bmp);
 };
 timer.Start();
 
