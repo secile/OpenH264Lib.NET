@@ -35,7 +35,9 @@ foreach(var bmp in bitmaps)
 (3) Build OpenH264Sample project. This is example C# project how to use OpenH264Lib.dll.  
 (4) Download 'openh264-1.7.0-win32.dll' from Cisco's [OpenH264 Github repository](https://github.com/cisco/openh264/releases),
 and copy it to OpenH264Sample/bin/Debug/ directory.  
-(5) Execute OpenH264Sample.exe. This program demos encode bmp/jpg/png images you select.
+(5) Execute OpenH264Sample.exe. This program demos encode bmp/jpg/png images you select.  
+
+Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (5).
 
 # And...
 You can make H264 recorder by using OpenH264Lib.NET and UsbCamera and AviWriter(in MotionJPEGWriter).
