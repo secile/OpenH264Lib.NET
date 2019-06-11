@@ -37,7 +37,7 @@ foreach(var bmp in bitmaps)
 and copy it to OpenH264Sample/bin/Debug/ directory.  
 (5) Execute OpenH264Sample.exe. This program demos encode bmp/jpg/png images you select.  
 
-Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (5).
+Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).
 
 # And...
 You can make H264 recorder by using OpenH264Lib.NET and UsbCamera and AviWriter(in MotionJPEGWriter).
