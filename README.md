@@ -30,12 +30,12 @@ foreach(var bmp in bitmaps)
 ```
 
 # See Example
-(1) Open OpenH264Lib.sln Visual Studio solution file.  
-(2) Build OpenH264Lib project. Then created OpenH264Lib.dll.  
-(3) Build OpenH264Sample project. This is example C# project how to use OpenH264Lib.dll.  
+(1) Open 'OpenH264Lib.sln' Visual Studio solution file.  
+(2) Build OpenH264Lib project from VisualStudio 'Build OpenH264Lib' menu. (Not 'Build Solution'), or in Solution Explorer, right click 'OpenH264Lib' project and build. Then created OpenH264Lib.dll.  
+(3) Build OpenH264Sample project from VisualStudio 'Build Solution' menu, or in Solution Explorer, right click 'OpenH264Sample' project and build. This is example C# project how to use OpenH264Lib.dll.  
 (4) Download 'openh264-1.7.0-win32.dll' from Cisco's [OpenH264 Github repository](https://github.com/cisco/openh264/releases),
 and copy it to OpenH264Sample/bin/Debug/ directory.  
-(5) Execute OpenH264Sample.exe. This program demos encode bmp/jpg/png images you select.  
+(5) Execute OpenH264Sample.exe. This program encode iamge files to H264 avi file, and decode avi to image.
 
 Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).
 
