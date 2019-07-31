@@ -53,10 +53,11 @@ var encoder = new OpenH264Lib.OpenH264Encoder("openh264-1.7.0-win32.dll");
 // write avi for every frame encorded.
 var fps = 10.0f;
 var writer = new Github.secile.Avi.AviWriter(System.IO.File.OpenWrite(path), "H264", camera.Size.Width, camera.Size.Height, fps);
-OpenH264Lib.OpenH264Encoder.OnEncodeCallback onEncode = (data, length, frameType) =>
+OpenH264Lib.Encoder.OnEncodeCallback onEncode = (data, length, frameType) =>
 {
-    var keyFrame = (frameType == OpenH264Lib.OpenH264Encoder.FrameType.IDR) || (frameType == OpenH264Lib.OpenH264Encoder.FrameType.I);
+    var keyFrame = (frameType == OpenH264Lib.Encoder.FrameType.IDR) || (frameType == OpenH264Lib.Encoder.FrameType.I);
     writer.AddImage(data, keyFrame);
+    Console.WriteLine("Encord {0} bytes, KeyFrame:{1}", length, keyFrame);
 };
 
 // setup encorder.
