@@ -39,8 +39,11 @@ and copy it to OpenH264Sample/bin/Debug/ directory.
 
 Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).
 
+# Remarks
+Since this is only a wrapper library, you have to know about original openh264 implementation when you add/modify features.
+
 # And...
-You can make H264 video recorder by using OpenH264Lib.NET and UsbCamera and AviWriter(in MotionJPEGWriter).
+You can make H264 video recorder by using [OpenH264Lib.NET](https://github.com/secile/OpenH264Lib.NET) and [UsbCamera](https://github.com/secile/UsbCamera/) and [AviWriter](https://github.com/secile/MotionJPEGWriter/blob/master/source/AviWriter.cs)(in MotionJPEGWriter).
 ```C#
 int index = 0;
 var camera = new Github.secile.Video.UsbCamera(index, new Size(640, 480));
