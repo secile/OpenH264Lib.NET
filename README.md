@@ -1,6 +1,6 @@
 # OpenH264Lib.NET
-OpenH264 wrapper library for .NET Framework.  
-This library is made with C++/CLI to bridge other .NET Framework language like C#.  
+Cisco's [openh264](https://github.com/cisco/openh264/) wrapper library for .NET Framework.  
+Written in C++/CLI to bridge other .NET Framework language like C#.  
 
 # How to use
 ```C#
@@ -33,14 +33,14 @@ foreach(var bmp in bitmaps)
 (1) Open 'OpenH264Lib.sln' Visual Studio solution file.  
 (2) Build OpenH264Lib project from VisualStudio 'Build OpenH264Lib' menu. (Not 'Build Solution'), or in Solution Explorer, right click 'OpenH264Lib' project and build. Then created OpenH264Lib.dll.  
 (3) Build OpenH264Sample project from VisualStudio 'Build Solution' menu, or in Solution Explorer, right click 'OpenH264Sample' project and build. This is example C# project how to use OpenH264Lib.dll.  
-(4) Download 'openh264-1.7.0-win32.dll' from Cisco's [OpenH264 Github repository](https://github.com/cisco/openh264/releases),
+(4) Download 'openh264-1.7.0-win32.dll' from Cisco's [openh264 Github repository](https://github.com/cisco/openh264/releases),
 and copy it to OpenH264Sample/bin/Debug/ directory.  
 (5) Execute OpenH264Sample.exe. This program encode iamge files to H264 avi file, and decode avi to image.
 
 Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).
 
 # And...
-You can make H264 recorder by using OpenH264Lib.NET and UsbCamera and AviWriter(in MotionJPEGWriter).
+You can make H264 video recorder by using OpenH264Lib.NET and UsbCamera and AviWriter(in MotionJPEGWriter).
 ```C#
 int index = 0;
 var camera = new Github.secile.Video.UsbCamera(index, new Size(640, 480));
