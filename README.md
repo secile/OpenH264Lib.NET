@@ -51,7 +51,7 @@ camera.Start();
 
 // create H264 encorder.
 var path = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\test.avi";
-var encoder = new OpenH264Lib.OpenH264Encoder("openh264-1.7.0-win32.dll");
+var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
 
 // write avi for every frame encorded.
 var fps = 10.0f;
