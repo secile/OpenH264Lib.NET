@@ -193,40 +193,25 @@ namespace OpenH264Lib {
 
 	unsigned char* Encoder::BitmapToRGBA(Bitmap^ bmp, int width, int height)
 	{
-		//1ピクセルあたりのバイト数を取得する
-		int pixelSize = 0;
-		switch (bmp->PixelFormat)
-		{
-		case System::Drawing::Imaging::PixelFormat::Format24bppRgb:
-			pixelSize = 3;
-			break;
-		case System::Drawing::Imaging::PixelFormat::Format32bppArgb:
-		case System::Drawing::Imaging::PixelFormat::Format32bppPArgb:
-		case System::Drawing::Imaging::PixelFormat::Format32bppRgb:
-			pixelSize = 4;
-			break;
-		default:
-			throw gcnew ArgumentException("1ピクセルあたり24または32ビットの形式のイメージのみ有効です。");
-		}
-
-		BitmapData^ bmpDate = bmp->LockBits(System::Drawing::Rectangle(0, 0, width, height), ImageLockMode::ReadOnly, bmp->PixelFormat);
+		const int pixelSize = 4;
+		BitmapData^ bmpDate = bmp->LockBits(System::Drawing::Rectangle(0, 0, width, height), ImageLockMode::ReadOnly, System::Drawing::Imaging::PixelFormat::Format32bppArgb);
 		byte *ptr = (byte *)bmpDate->Scan0.ToPointer();
 
-		unsigned char* buffer = new unsigned char[width * height * 4];
+		unsigned char* buffer = new unsigned char[width * height * pixelSize];
 
 		int cnt = 0;
-		for (int y = 0; y <= height - 1; y++)
+		for (int y = 0; y < height; y++)
 		{
-			for (int x = 0; x <= width - 1; x++)
+			for (int x = 0; x < width; x++)
 			{
 				//ピクセルデータでのピクセル(x,y)の開始位置を計算する
 				int pos = y * bmpDate->Stride + x * pixelSize;
 
-				buffer[cnt + 0] = ptr[pos + 0]; // r
+				buffer[cnt + 0] = ptr[pos + 0]; // b
 				buffer[cnt + 1] = ptr[pos + 1]; // g
-				buffer[cnt + 2] = ptr[pos + 2]; // b
+				buffer[cnt + 2] = ptr[pos + 2]; // r
 				buffer[cnt + 3] = 0x00;         // a
-				cnt += 4;
+				cnt += pixelSize;
 			}
 		}
 
@@ -240,10 +225,10 @@ namespace OpenH264Lib {
 	// http://qiita.com/gomachan7/items/54d43693f943a0986e95
 	unsigned char* Encoder::RGBAtoYUV420Planar(unsigned char *rgba, int width, int height)
 	{
-		int frameSize = width * height;
+		const int frameSize = width * height;
 		int yIndex = 0;
-		int uIndex = frameSize;
-		int vIndex = frameSize + (frameSize / 4);
+		int vIndex = frameSize;
+		int uIndex = frameSize + (frameSize / 4);
 		int r, g, b, y, u, v;
 		int index = 0;
 
@@ -253,9 +238,9 @@ namespace OpenH264Lib {
 		{
 			for (int i = 0; i < width; i++)
 			{
-				r = rgba[index * 4 + 0] & 0xff;
+				b = rgba[index * 4 + 0] & 0xff;
 				g = rgba[index * 4 + 1] & 0xff;
-				b = rgba[index * 4 + 2] & 0xff;
+				r = rgba[index * 4 + 2] & 0xff;
 				// a = rgba[index * 4 + 3] & 0xff; unused
 
 				y = (int)(0.257 * r + 0.504 * g + 0.098 * b) + 16;

@@ -33,19 +33,19 @@ namespace OpenH264Lib {
 		if (rc != 0) return nullptr;
 		if (bufInfo.iBufferStatus != 1) return nullptr;
 
-		// Y Plane(luma)
+		// Y Plane
 		byte* y_plane = buffer[0];
 		int y_w = bufInfo.UsrData.sSystemBuffer.iWidth;
 		int y_h = bufInfo.UsrData.sSystemBuffer.iHeight;
 		int y_s = bufInfo.UsrData.sSystemBuffer.iStride[0];
 
-		// U Plane(chroma B - Y')
+		// U Plane
 		byte* u_plane = buffer[1];
 		int u_w = bufInfo.UsrData.sSystemBuffer.iWidth / 2;
 		int u_h = bufInfo.UsrData.sSystemBuffer.iHeight / 2;
 		int u_s = bufInfo.UsrData.sSystemBuffer.iStride[1];
 
-		// V Plane(chroma R - Y')
+		// V Plane
 		byte* v_plane = buffer[2];
 		int v_w = bufInfo.UsrData.sSystemBuffer.iWidth / 2;
 		int v_h = bufInfo.UsrData.sSystemBuffer.iHeight / 2;
@@ -55,7 +55,7 @@ namespace OpenH264Lib {
 		int height = y_h;
 		int stride = y_s;
 
-		byte* rgb = YUV420PtoRGB(y_plane, v_plane, u_plane, width, height, stride); // なぜかuvが逆。
+		byte* rgb = YUV420PtoRGB(y_plane, u_plane, v_plane, width, height, stride);
 		Bitmap^ result = RGBtoBitmap(rgb, width, height);
 		delete rgb;
 
@@ -160,8 +160,8 @@ namespace OpenH264Lib {
 			{
 				int C1 = pYp[0] - 16; // Yの下限は16
 				int C2 = pYp[1] - 16; // Yの下限は16
-				int D = *pUp - 128;  // 128で無色差
-				int E = *pVp - 128;  // 128で無色差
+				int D = *pUp - 128;   // 128で無色差
+				int E = *pVp - 128;   // 128で無色差
 
 				int R1 = (298 * C1 + 409 * E + 128) >> 8;
 				int G1 = (298 * C1 - 100 * D - 208 * E + 128) >> 8;
@@ -171,14 +171,14 @@ namespace OpenH264Lib {
 				int G2 = (298 * C2 - 100 * D - 208 * E + 128) >> 8;
 				int B2 = (298 * C2 + 516 * D + 128) >> 8;
 
-				rgb[0] = (byte)(R1 < 0 ? 0 : R1 > 255 ? 255 : R1);
+				rgb[0] = (byte)(B1 < 0 ? 0 : B1 > 255 ? 255 : B1);
 				rgb[1] = (byte)(G1 < 0 ? 0 : G1 > 255 ? 255 : G1);
-				rgb[2] = (byte)(B1 < 0 ? 0 : B1 > 255 ? 255 : B1);
-
-				rgb[3] = (byte)(R2 < 0 ? 0 : R2 > 255 ? 255 : R2);
+				rgb[2] = (byte)(R1 < 0 ? 0 : R1 > 255 ? 255 : R1);
+				
+				rgb[3] = (byte)(B2 < 0 ? 0 : B2 > 255 ? 255 : B2);
 				rgb[4] = (byte)(G2 < 0 ? 0 : G2 > 255 ? 255 : G2);
-				rgb[5] = (byte)(B2 < 0 ? 0 : B2 > 255 ? 255 : B2);
-
+				rgb[5] = (byte)(R2 < 0 ? 0 : R2 > 255 ? 255 : R2);
+				
 				rgb += 6;
 				pYp += 2;
 				pUp += 1;
@@ -191,23 +191,23 @@ namespace OpenH264Lib {
 
 	Bitmap^ Decoder::RGBtoBitmap(byte* rgb, int width, int height)
 	{
-		int pixelSize = 3;
+		const int pixelSize = 3;
 		Bitmap^ bmp = gcnew Bitmap(width, height, System::Drawing::Imaging::PixelFormat::Format24bppRgb);
 		BitmapData^ bmpDate = bmp->LockBits(System::Drawing::Rectangle(0, 0, width, height), ImageLockMode::WriteOnly, bmp->PixelFormat);
 		byte *ptr = (byte *)bmpDate->Scan0.ToPointer();
 
 		int cnt = 0;
-		for (int y = 0; y <= height - 1; y++)
+		for (int y = 0; y < height; y++)
 		{
-			for (int x = 0; x <= width - 1; x++)
+			for (int x = 0; x < width; x++)
 			{
 				//ピクセルデータでのピクセル(x,y)の開始位置を計算する
 				int pos = y * bmpDate->Stride + x * pixelSize;
 
-				ptr[pos + 0] = rgb[cnt + 0]; // r
+				ptr[pos + 0] = rgb[cnt + 0]; // b
 				ptr[pos + 1] = rgb[cnt + 1]; // g
-				ptr[pos + 2] = rgb[cnt + 2]; // b
-				cnt += 3;
+				ptr[pos + 2] = rgb[cnt + 2]; // r
+				cnt += pixelSize;
 			}
 		}
 
