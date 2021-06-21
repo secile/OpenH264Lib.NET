@@ -37,7 +37,8 @@ foreach(var bmp in bitmaps)
 and copy it to OpenH264Sample/bin/Debug/ directory.  
 (5) Execute OpenH264Sample.exe. This program encode image files to H264 avi file, and decode avi to image.
 
-Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).
+Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).  
+Note: At present, use Cisco's dll version 2.0.0 and before. ([issue #19](https://github.com/secile/OpenH264Lib.NET/issues/19))  
 
 # Remarks
 Since this is only a wrapper library, you have to know about original openh264 implementation when you add/modify features.
