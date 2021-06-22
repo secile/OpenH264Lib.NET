@@ -11,6 +11,8 @@ namespace OpenH264Sample
 {
     public partial class frmMain : Form
     {
+        private const string DllName = "openh264-2.1.1-win32.dll";
+
         public frmMain()
         {
             InitializeComponent();
@@ -38,7 +40,7 @@ namespace OpenH264Sample
             var writer = new H264Writer(aviFile, firstFrame.Width, firstFrame.Height, fps);
 
             // H264エンコーダーを作成(create H264 encoder)
-            var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
+            var encoder = new OpenH264Lib.Encoder(DllName);
 
             // 1フレームエンコードするごとにライターに書き込み(write frame data for each frame encoded)
             OpenH264Lib.Encoder.OnEncodeCallback onEncode = (data, length, frameType) =>
@@ -77,7 +79,7 @@ namespace OpenH264Sample
 
         private void H264Decode(string path, int fps)
         {
-            var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
+            var decoder = new OpenH264Lib.Decoder(DllName);
 
             var aviFile = System.IO.File.OpenRead(path);
             var riff = new RiffFile(aviFile);

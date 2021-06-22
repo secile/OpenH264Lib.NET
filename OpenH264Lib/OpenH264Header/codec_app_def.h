@@ -78,13 +78,14 @@ typedef enum {
   /**
   * Errors derived from bitstream parsing
   */
-  dsErrorFree           = 0x00,   ///< bit stream error-free
-  dsFramePending        = 0x01,   ///< need more throughput to generate a frame output,
-  dsRefLost             = 0x02,   ///< layer lost at reference frame with temporal id 0
-  dsBitstreamError      = 0x04,   ///< error bitstreams(maybe broken internal frame) the decoder cared
-  dsDepLayerLost        = 0x08,   ///< dependented layer is ever lost
-  dsNoParamSets         = 0x10,   ///< no parameter set NALs involved
-  dsDataErrorConcealed  = 0x20,   ///< current data error concealed specified
+  dsErrorFree = 0x00,   ///< bit stream error-free
+  dsFramePending = 0x01,   ///< need more throughput to generate a frame output,
+  dsRefLost = 0x02,   ///< layer lost at reference frame with temporal id 0
+  dsBitstreamError = 0x04,   ///< error bitstreams(maybe broken internal frame) the decoder cared
+  dsDepLayerLost = 0x08,   ///< dependented layer is ever lost
+  dsNoParamSets = 0x10,   ///< no parameter set NALs involved
+  dsDataErrorConcealed = 0x20,   ///< current data error concealed specified
+  dsRefListNullPtrs = 0x40, ///<ref picure list contains null ptrs within uiRefCount range
 
   /**
   * Errors derived from logic level
@@ -165,7 +166,9 @@ typedef enum {
   DECODER_OPTION_PROFILE,               ///< get current AU profile info, only is used in GetOption
   DECODER_OPTION_LEVEL,                 ///< get current AU level info,only is used in GetOption
   DECODER_OPTION_STATISTICS_LOG_INTERVAL,///< set log output interval
-
+  DECODER_OPTION_IS_REF_PIC,             ///< feedback current frame is ref pic or not
+  DECODER_OPTION_NUM_OF_FRAMES_REMAINING_IN_BUFFER,  ///< number of frames remaining in decoder buffer when pictures are required to re-ordered into display-order.
+  DECODER_OPTION_NUM_OF_THREADS,         ///< number of decoding threads. The maximum thread count is equal or less than lesser of (cpu core counts and 16).
 } DECODER_OPTION;
 
 /**
@@ -344,8 +347,10 @@ typedef enum {
  */
 typedef struct {
   SliceModeEnum uiSliceMode;    ///< by default, uiSliceMode will be SM_SINGLE_SLICE
-  unsigned int  uiSliceNum;     ///< only used when uiSliceMode=1, when uiSliceNum=0 means auto design it with cpu core number
-  unsigned int  uiSliceMbNum[MAX_SLICES_NUM_TMP]; ///< only used when uiSliceMode=2; when =0 means setting one MB row a slice
+  unsigned int
+  uiSliceNum;     ///< only used when uiSliceMode=1, when uiSliceNum=0 means auto design it with cpu core number
+  unsigned int
+  uiSliceMbNum[MAX_SLICES_NUM_TMP]; ///< only used when uiSliceMode=2; when =0 means setting one MB row a slice
   unsigned int  uiSliceSizeConstraint; ///< now only used when uiSliceMode=4
 } SSliceArgument;
 
@@ -360,7 +365,7 @@ typedef enum {
   VF_MAC,
   VF_UNDEF,
   VF_NUM_ENUM
-} EVideoFormatSPS;	// EVideoFormat is already defined/used elsewhere!
+} EVideoFormatSPS;  // EVideoFormat is already defined/used elsewhere!
 
 /**
 * @brief Enumerate the type of color primaries
@@ -439,7 +444,7 @@ typedef enum {
   ASP_15x11 = 11,
   ASP_64x33 = 12,
   ASP_160x99 = 13,
-  
+
   ASP_EXT_SAR = 255
 } ESampleAspectRatio;
 
@@ -460,16 +465,20 @@ typedef struct {
   SSliceArgument sSliceArgument;
 
   // Note: members bVideoSignalTypePresent through uiColorMatrix below are also defined in SWelsSPS in parameter_sets.h.
-  bool			bVideoSignalTypePresent;	// false => do not write any of the following information to the header
-  unsigned char	uiVideoFormat;				// EVideoFormatSPS; 3 bits in header; 0-5 => component, kpal, ntsc, secam, mac, undef
-  bool			bFullRange;					// false => analog video data range [16, 235]; true => full data range [0,255]
-  bool			bColorDescriptionPresent;	// false => do not write any of the following three items to the header
-  unsigned char	uiColorPrimaries;			// EColorPrimaries; 8 bits in header; 0 - 9 => ???, bt709, undef, ???, bt470m, bt470bg,
-                                            //    smpte170m, smpte240m, film, bt2020
-  unsigned char	uiTransferCharacteristics;	// ETransferCharacteristics; 8 bits in header; 0 - 15 => ???, bt709, undef, ???, bt470m, bt470bg, smpte170m,
-										    //   smpte240m, linear, log100, log316, iec61966-2-4, bt1361e, iec61966-2-1, bt2020-10, bt2020-12
-  unsigned char	uiColorMatrix;				// EColorMatrix; 8 bits in header (corresponds to FFmpeg "colorspace"); 0 - 10 => GBR, bt709,
-										    //   undef, ???, fcc, bt470bg, smpte170m, smpte240m, YCgCo, bt2020nc, bt2020c
+  bool      bVideoSignalTypePresent;  // false => do not write any of the following information to the header
+  unsigned char
+  uiVideoFormat;        // EVideoFormatSPS; 3 bits in header; 0-5 => component, kpal, ntsc, secam, mac, undef
+  bool      bFullRange;         // false => analog video data range [16, 235]; true => full data range [0,255]
+  bool      bColorDescriptionPresent; // false => do not write any of the following three items to the header
+  unsigned char
+  uiColorPrimaries;     // EColorPrimaries; 8 bits in header; 0 - 9 => ???, bt709, undef, ???, bt470m, bt470bg,
+  //    smpte170m, smpte240m, film, bt2020
+  unsigned char
+  uiTransferCharacteristics;  // ETransferCharacteristics; 8 bits in header; 0 - 15 => ???, bt709, undef, ???, bt470m, bt470bg, smpte170m,
+  //   smpte240m, linear, log100, log316, iec61966-2-4, bt1361e, iec61966-2-1, bt2020-10, bt2020-12
+  unsigned char
+  uiColorMatrix;        // EColorMatrix; 8 bits in header (corresponds to FFmpeg "colorspace"); 0 - 10 => GBR, bt709,
+  //   undef, ???, fcc, bt470bg, smpte170m, smpte240m, YCgCo, bt2020nc, bt2020c
 
   bool bAspectRatioPresent; ///< aspect ratio present in VUI
   ESampleAspectRatio eAspectRatio; ///< aspect ratio idc
@@ -484,14 +493,16 @@ typedef struct {
 typedef enum {
   CAMERA_VIDEO_REAL_TIME,      ///< camera video for real-time communication
   SCREEN_CONTENT_REAL_TIME,    ///< screen content signal
-  CAMERA_VIDEO_NON_REAL_TIME
+  CAMERA_VIDEO_NON_REAL_TIME,
+  SCREEN_CONTENT_NON_REAL_TIME,
+  INPUT_CONTENT_TYPE_ALL,
 } EUsageType;
 
 /**
 * @brief Enumulate the complexity mode
 */
 typedef enum {
-  LOW_COMPLEXITY,             ///< the lowest compleixty,the fastest speed,
+  LOW_COMPLEXITY = 0,              ///< the lowest compleixty,the fastest speed,
   MEDIUM_COMPLEXITY,          ///< medium complexity, medium speed,medium quality
   HIGH_COMPLEXITY             ///< high complexity, lowest speed, high quality
 } ECOMPLEXITY_MODE;
@@ -513,7 +524,7 @@ typedef enum {
 */
 typedef struct TagEncParamBase {
   EUsageType
-  iUsageType;                 ///< application type;1.CAMERA_VIDEO_REAL_TIME:camera video signal; 2.SCREEN_CONTENT_REAL_TIME:screen content signal;
+  iUsageType;                 ///< application type; please refer to the definition of EUsageType
 
   int       iPicWidth;        ///< width of picture in luminance samples (the maximum of all layers if multiple spatial layers presents)
   int       iPicHeight;       ///< height of picture in luminance samples((the maximum of all layers if multiple spatial layers presents)
@@ -528,13 +539,13 @@ typedef struct TagEncParamBase {
 */
 typedef struct TagEncParamExt {
   EUsageType
-  iUsageType;                          ///< application type;1.CAMERA_VIDEO_REAL_TIME:camera video signal;2.SCREEN_CONTENT_REAL_TIME:screen content signal;
+  iUsageType;                          ///< same as in TagEncParamBase
 
-  int       iPicWidth;                 ///< width of picture in luminance samples (the maximum of all layers if multiple spatial layers presents)
-  int       iPicHeight;                ///< height of picture in luminance samples((the maximum of all layers if multiple spatial layers presents)
-  int       iTargetBitrate;            ///< target bitrate desired, in unit of bps
-  RC_MODES  iRCMode;                   ///< rate control mode
-  float     fMaxFrameRate;             ///< maximal input frame rate
+  int       iPicWidth;                 ///< same as in TagEncParamBase
+  int       iPicHeight;                ///< same as in TagEncParamBase
+  int       iTargetBitrate;            ///< same as in TagEncParamBase
+  RC_MODES  iRCMode;                   ///< same as in TagEncParamBase
+  float     fMaxFrameRate;             ///< same as in TagEncParamBase
 
   int       iTemporalLayerNum;         ///< temporal layer number, max temporal layer = 4
   int       iSpatialLayerNum;          ///< spatial layer number,1<= iSpatialLayerNum <= MAX_SPATIAL_LAYER_NUM, MAX_SPATIAL_LAYER_NUM = 4
@@ -710,7 +721,7 @@ typedef struct TagDecoderCapability {
 */
 typedef struct TagParserBsInfo {
   int iNalNum;                                 ///< total NAL number in current AU
-  int *pNalLenInByte;  ///< each nal length
+  int* pNalLenInByte;  ///< each nal length
   unsigned char* pDstBuff;                     ///< outputted dst buffer for parsed bitstream
   int iSpsWidthInPixel;                        ///< required SPS width info
   int iSpsHeightInPixel;                       ///< required SPS height info
@@ -742,7 +753,11 @@ typedef struct TagVideoEncoderStatistics {
   unsigned int uiLTRSentNum;                   ///< number of LTR sent/marked
 
   long long    iStatisticsTs;                  ///< Timestamp of updating the statistics
-} SEncoderStatistics; // in building, coming soon
+
+  unsigned long iTotalEncodedBytes;
+  unsigned long iLastStatisticsBytes;
+  unsigned long iLastStatisticsFrameCount;
+} SEncoderStatistics;
 
 /**
 * @brief  Structure for decoder statistics
@@ -763,7 +778,8 @@ typedef struct TagVideoDecoderStatistics {
   unsigned int uiEcIDRNum;                     ///< number of actual unintegrity IDR or not received but eced
   unsigned int uiEcFrameNum;                   ///<
   unsigned int uiIDRLostNum;                   ///< number of whole lost IDR
-  unsigned int uiFreezingIDRNum;               ///< number of freezing IDR with error (partly received), under resolution change
+  unsigned int
+  uiFreezingIDRNum;               ///< number of freezing IDR with error (partly received), under resolution change
   unsigned int uiFreezingNonIDRNum;            ///< number of freezing non-IDR with error
   int iAvgLumaQp;                              ///< average luma QP. default: -1, no correct frame outputted
   int iSpsReportErrorNum;                      ///< number of Sps Invalid report

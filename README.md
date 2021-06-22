@@ -5,8 +5,8 @@ Written in C++/CLI to bridge other .NET Framework language like C#.  
 # How to use
 ```C#
 // create encoder and decoder
-var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
-var decoder = new OpenH264Lib.Decoder("openh264-1.7.0-win32.dll");
+var encoder = new OpenH264Lib.Encoder("openh264-2.1.1-win32.dll");
+var decoder = new OpenH264Lib.Decoder("openh264-2.1.1-win32.dll");
 
 // setup encoder
 float fps = 10.0f;
@@ -33,11 +33,11 @@ foreach(var bmp in bitmaps)
 1. Open 'OpenH264Lib.sln' Visual Studio solution file.  
 1. Build OpenH264Lib project from VisualStudio 'Build OpenH264Lib' menu. (Not 'Build Solution'), or in Solution Explorer, right click 'OpenH264Lib' project and build. Then created OpenH264Lib.dll.  
 1. Build OpenH264Sample project from VisualStudio 'Build Solution' menu, or in Solution Explorer, right click 'OpenH264Sample' project and build. This is example C# project how to use OpenH264Lib.dll.  
-1. Download 'openh264-1.7.0-win32.dll' from Cisco's [openh264 Github repository](https://github.com/cisco/openh264/releases),
+1. Download 'openh264-2.1.1-win32.dll' from Cisco's [openh264 Github repository](https://github.com/cisco/openh264/releases),
 and copy it to OpenH264Sample/bin/Debug/ directory.  
     * If you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).  
-    * Use Cisco's dll version 2.0.0 and before. ([issue #19](https://github.com/secile/OpenH264Lib.NET/issues/19)).
-    If you are going to use dll version 2.1.0 and later, use [latest repository](https://github.com/secile/OpenH264Lib.NET).
+    * Use Cisco's dll version 2.1.0 and later. ([issue #19](https://github.com/secile/OpenH264Lib.NET/issues/19)).
+    If you are going to use dll version 2.0.0 and before, use [old repository](https://github.com/secile/OpenH264Lib.NET/tree/b024291e244719aacfd50e4066e76120361085d5).
 1. Execute OpenH264Sample.exe. This program encode image files to H264 avi file, and decode avi to image. 
 
 # Remarks
@@ -52,7 +52,7 @@ camera.Start();
 
 // create H264 encorder.
 var path = System.Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory) + @"\test.avi";
-var encoder = new OpenH264Lib.Encoder("openh264-1.7.0-win32.dll");
+var encoder = new OpenH264Lib.Encoder("openh264-2.1.1-win32.dll");
 
 // write avi for every frame encorded.
 var fps = 10.0f;

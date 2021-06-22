@@ -26,7 +26,7 @@ namespace OpenH264Lib {
 
 	Bitmap^ Decoder::Decode(unsigned char *frame, int length)
 	{
-		unsigned char* buffer[3];
+		unsigned char* buffer[3]; // obsoleted openh264 version 2.1.0 and later.
 
 		SBufferInfo bufInfo; memset(&bufInfo, 0x00, sizeof(bufInfo));
 		int rc = decoder->DecodeFrame2(frame, length, buffer, &bufInfo);
@@ -34,19 +34,19 @@ namespace OpenH264Lib {
 		if (bufInfo.iBufferStatus != 1) return nullptr;
 
 		// Y Plane
-		byte* y_plane = buffer[0];
+		byte* y_plane = bufInfo.pDst[0];
 		int y_w = bufInfo.UsrData.sSystemBuffer.iWidth;
 		int y_h = bufInfo.UsrData.sSystemBuffer.iHeight;
 		int y_s = bufInfo.UsrData.sSystemBuffer.iStride[0];
 
 		// U Plane
-		byte* u_plane = buffer[1];
+		byte* u_plane = bufInfo.pDst[1];
 		int u_w = bufInfo.UsrData.sSystemBuffer.iWidth / 2;
 		int u_h = bufInfo.UsrData.sSystemBuffer.iHeight / 2;
 		int u_s = bufInfo.UsrData.sSystemBuffer.iStride[1];
 
 		// V Plane
-		byte* v_plane = buffer[2];
+		byte* v_plane = bufInfo.pDst[2];
 		int v_w = bufInfo.UsrData.sSystemBuffer.iWidth / 2;
 		int v_h = bufInfo.UsrData.sSystemBuffer.iHeight / 2;
 		int v_s = bufInfo.UsrData.sSystemBuffer.iStride[1];
