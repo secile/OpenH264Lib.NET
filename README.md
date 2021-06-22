@@ -30,15 +30,15 @@ foreach(var bmp in bitmaps)
 ```
 
 # See Example
-(1) Open 'OpenH264Lib.sln' Visual Studio solution file.  
-(2) Build OpenH264Lib project from VisualStudio 'Build OpenH264Lib' menu. (Not 'Build Solution'), or in Solution Explorer, right click 'OpenH264Lib' project and build. Then created OpenH264Lib.dll.  
-(3) Build OpenH264Sample project from VisualStudio 'Build Solution' menu, or in Solution Explorer, right click 'OpenH264Sample' project and build. This is example C# project how to use OpenH264Lib.dll.  
-(4) Download 'openh264-1.7.0-win32.dll' from Cisco's [openh264 Github repository](https://github.com/cisco/openh264/releases),
+1. Open 'OpenH264Lib.sln' Visual Studio solution file.  
+1. Build OpenH264Lib project from VisualStudio 'Build OpenH264Lib' menu. (Not 'Build Solution'), or in Solution Explorer, right click 'OpenH264Lib' project and build. Then created OpenH264Lib.dll.  
+1. Build OpenH264Sample project from VisualStudio 'Build Solution' menu, or in Solution Explorer, right click 'OpenH264Sample' project and build. This is example C# project how to use OpenH264Lib.dll.  
+1. Download 'openh264-1.7.0-win32.dll' from Cisco's [openh264 Github repository](https://github.com/cisco/openh264/releases),
 and copy it to OpenH264Sample/bin/Debug/ directory.  
-(5) Execute OpenH264Sample.exe. This program encode image files to H264 avi file, and decode avi to image.
-
-Note: if you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).  
-Note: At present, use Cisco's dll version 2.0.0 and before. ([issue #19](https://github.com/secile/OpenH264Lib.NET/issues/19))  
+    * If you are going to use 'openh264-x.x.x-win64.dll', build dll and exe as x64 pratform in step (2) and (3).  
+    * Use Cisco's dll version 2.0.0 and before. ([issue #19](https://github.com/secile/OpenH264Lib.NET/issues/19)).
+    If you are going to use dll version 2.1.0 and later, use [latest repository](https://github.com/secile/OpenH264Lib.NET).
+1. Execute OpenH264Sample.exe. This program encode image files to H264 avi file, and decode avi to image. 
 
 # Remarks
 Since this is only a wrapper library, you have to know about original openh264 implementation when you add/modify features.
